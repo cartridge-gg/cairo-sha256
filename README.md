@@ -34,9 +34,9 @@ finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr_end
 
 Output is an array of 8 32-bit words (big endian).
 
-Note: You must call finalize_sha2() at the end of the program. Otherwise, this function
+**Note: You must call finalize_sha2() at the end of the program. Otherwise, this function
 is not sound and a malicious prover may return a wrong result.
-Note: the interface of this function may change in the future.
+Note: the interface of this function may change in the future.**
 
 ## Development
 
