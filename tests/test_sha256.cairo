@@ -1,4 +1,3 @@
-
 %lang starknet
 
 from starkware.cairo.common.cairo_builtins import HashBuiltin, BitwiseBuiltin
@@ -135,7 +134,6 @@ func test_sha256_0bits{bitwise_ptr : BitwiseBuiltin*, range_check_ptr}():
     let h = hash[7]
     assert h = 0x7852b855
 
-
     return ()
 end
 
@@ -209,6 +207,166 @@ func test_sha256_448bits{bitwise_ptr : BitwiseBuiltin*, range_check_ptr}():
     assert g = 0xf6ecedd4
     let h = hash[7]
     assert h = 0x19db06c1
+
+    return ()
+end
+
+@view
+func test_sha256_504bits{bitwise_ptr : BitwiseBuiltin*, range_check_ptr}():
+    alloc_locals
+    # Input String: "0000111122223333444455556666777788889999aaaabbbbccccddddeeeefff"
+    let (input) = alloc()
+    assert input[0] = '0000'
+    assert input[1] = '1111'
+    assert input[2] = '2222'
+    assert input[3] = '3333'
+    assert input[4] = '4444'
+    assert input[5] = '5555'
+    assert input[6] = '6666'
+    assert input[7] = '7777'
+    assert input[8] = '8888'
+    assert input[9] = '9999'
+    assert input[10] = 'aaaa'
+    assert input[11] = 'bbbb'
+    assert input[12] = 'cccc'
+    assert input[13] = 'dddd'
+    assert input[14] = 'eeee'
+    assert input[15] = 'fff\x00'
+
+    let (local sha256_ptr : felt*) = alloc()
+    let sha256_ptr_start = sha256_ptr
+    let (hash) = sha256{sha256_ptr=sha256_ptr}(input, 63)
+    finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr)
+
+    # Resulting hash: 214072bf9da123ca5a8925edb05a6f071fc48fa66494d08513b9ba1b82df20cd
+    let a = hash[0]
+    assert a = 0x214072bf
+    let b = hash[1]
+    assert b = 0x9da123ca
+    let c = hash[2]
+    assert c = 0x5a8925ed
+    let d = hash[3]
+    assert d = 0xb05a6f07
+    let e = hash[4]
+    assert e = 0x1fc48fa6
+    let f = hash[5]
+    assert f = 0x6494d085
+    let g = hash[6]
+    assert g = 0x13b9ba1b
+    let h = hash[7]
+    assert h = 0x82df20cd
+
+    return ()
+end
+
+@view
+func test_sha256_512bits{bitwise_ptr : BitwiseBuiltin*, range_check_ptr}():
+    alloc_locals
+    # Input String: "0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff"
+    let (input) = alloc()
+    assert input[0] = '0000'
+    assert input[1] = '1111'
+    assert input[2] = '2222'
+    assert input[3] = '3333'
+    assert input[4] = '4444'
+    assert input[5] = '5555'
+    assert input[6] = '6666'
+    assert input[7] = '7777'
+    assert input[8] = '8888'
+    assert input[9] = '9999'
+    assert input[10] = 'aaaa'
+    assert input[11] = 'bbbb'
+    assert input[12] = 'cccc'
+    assert input[13] = 'dddd'
+    assert input[14] = 'eeee'
+    assert input[15] = 'ffff'
+
+    let (local sha256_ptr : felt*) = alloc()
+    let sha256_ptr_start = sha256_ptr
+    let (hash) = sha256{sha256_ptr=sha256_ptr}(input, 64)
+    finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr)
+
+    # Resulting hash: c7a7d8c0472c7f6234380e9dd3a55eb24d3e5dba9d106b74a260dc787f2f6df8
+    let a = hash[0]
+    assert a = 0xc7a7d8c0
+    let b = hash[1]
+    assert b = 0x472c7f62
+    let c = hash[2]
+    assert c = 0x34380e9d
+    let d = hash[3]
+    assert d = 0xd3a55eb2
+    let e = hash[4]
+    assert e = 0x4d3e5dba
+    let f = hash[5]
+    assert f = 0x9d106b74
+    let g = hash[6]
+    assert g = 0xa260dc78
+    let h = hash[7]
+    assert h = 0x7f2f6df8
+
+    return ()
+end
+
+@view
+func test_sha256_1024bits{bitwise_ptr : BitwiseBuiltin*, range_check_ptr}():
+    alloc_locals
+    # Input String: "0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff0000111122223333444455556666777788889999aaaabbbbccccddddeeeeffff"
+    let (input) = alloc()
+    assert input[0] = '0000'
+    assert input[1] = '1111'
+    assert input[2] = '2222'
+    assert input[3] = '3333'
+    assert input[4] = '4444'
+    assert input[5] = '5555'
+    assert input[6] = '6666'
+    assert input[7] = '7777'
+    assert input[8] = '8888'
+    assert input[9] = '9999'
+    assert input[10] = 'aaaa'
+    assert input[11] = 'bbbb'
+    assert input[12] = 'cccc'
+    assert input[13] = 'dddd'
+    assert input[14] = 'eeee'
+    assert input[15] = 'ffff'
+    assert input[16] = '0000'
+    assert input[17] = '1111'
+    assert input[18] = '2222'
+    assert input[19] = '3333'
+    assert input[20] = '4444'
+    assert input[21] = '5555'
+    assert input[22] = '6666'
+    assert input[23] = '7777'
+    assert input[24] = '8888'
+    assert input[25] = '9999'
+    assert input[26] = 'aaaa'
+    assert input[27] = 'bbbb'
+    assert input[28] = 'cccc'
+    assert input[29] = 'dddd'
+    assert input[30] = 'eeee'
+    assert input[31] = 'ffff'
+
+    let (local sha256_ptr : felt*) = alloc()
+    let sha256_ptr_start = sha256_ptr
+    let (hash) = sha256{sha256_ptr=sha256_ptr}(input, 128)
+    finalize_sha256(sha256_ptr_start=sha256_ptr_start, sha256_ptr_end=sha256_ptr)
+
+    # Resulting hash: e324cc62be4f0465591b5cac1309ab4d5a9ee4ae8e99158c50cef7597898f046
+    let a = hash[0]
+    assert a = 0xe324cc62
+    let b = hash[1]
+    assert b = 0xbe4f0465
+    let c = hash[2]
+    assert c = 0x591b5cac
+    let d = hash[3]
+    assert d = 0x1309ab4d
+    let e = hash[4]
+    assert e = 0x5a9ee4ae
+    let f = hash[5]
+    assert f = 0x8e99158c
+    let g = hash[6]
+    assert g = 0x50cef759
+    let h = hash[7]
+    assert h = 0x7898f046
 
     return ()
 end
