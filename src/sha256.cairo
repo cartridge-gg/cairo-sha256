@@ -64,9 +64,11 @@ func _sha256_chunk{range_check_ptr, sha256_start: felt*, state: felt*, output: f
 
         _sha256_input_chunk_size_felts = int(ids.SHA256_INPUT_CHUNK_SIZE_FELTS)
         assert 0 <= _sha256_input_chunk_size_felts < 100
+        _sha256_state_size_felts = int(ids.SHA256_STATE_SIZE_FELTS)
+        assert 0 <= _sha256_state_size_felts < 100
         w = compute_message_schedule(memory.get_range(
             ids.sha256_start, _sha256_input_chunk_size_felts))
-        new_state = sha2_compress_function(memory.get_range(ids.state, int(ids.SHA256_STATE_SIZE_FELTS)), w)
+        new_state = sha2_compress_function(memory.get_range(ids.state, _sha256_state_size_felts), w)
         segments.write_arg(ids.output, new_state)
     %}
     return ()
@@ -350,7 +352,7 @@ func finalize_sha256{range_check_ptr, bitwise_ptr : BitwiseBuiltin*}(
         message = [0] * _sha256_input_chunk_size_felts
         w = compute_message_schedule(message)
         output = sha2_compress_function(IV, w)
-        padding = (IV + message + output) * (_block_size - ids.n)
+        padding = (IV + message + output) * (_block_size - 1)
         segments.write_arg(ids.sha256_ptr_end, padding)
     %}
 
