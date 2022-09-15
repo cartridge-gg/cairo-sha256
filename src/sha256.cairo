@@ -356,7 +356,7 @@ func finalize_sha256{range_check_ptr, bitwise_ptr: BitwiseBuiltin*}(
         message = [0] * _sha256_input_chunk_size_felts
         w = compute_message_schedule(message)
         output = sha2_compress_function(IV, w)
-        padding = (IV + message + output) * (_block_size - 1)
+        padding = (message + IV + output) * (_block_size - 1)
         segments.write_arg(ids.sha256_ptr_end, padding)
     %}
 
