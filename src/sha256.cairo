@@ -63,7 +63,7 @@ func sha256{range_check_ptr, sha256_ptr: felt*}(data: felt*, n_bytes: felt) -> (
 }
 
 // Computes the sha256 hash of the input chunk from `message` to `message + SHA256_INPUT_CHUNK_SIZE_FELTS`
-func _sha256_chunk{range_check_ptr, message: felt*, state: felt*, output: felt*}() {
+func _sha256_chunk{range_check_ptr, sha256_start: felt*, state: felt*, output: felt*}() {
     %{
         from starkware.cairo.common.cairo_sha256.sha256_utils import (
             compute_message_schedule, sha2_compress_function)
@@ -73,7 +73,7 @@ func _sha256_chunk{range_check_ptr, message: felt*, state: felt*, output: felt*}
         _sha256_state_size_felts = int(ids.SHA256_STATE_SIZE_FELTS)
         assert 0 <= _sha256_state_size_felts < 100
         w = compute_message_schedule(memory.get_range(
-            ids.message, _sha256_input_chunk_size_felts))
+            ids.sha256_start, _sha256_input_chunk_size_felts))
         new_state = sha2_compress_function(memory.get_range(ids.state, _sha256_state_size_felts), w)
         segments.write_arg(ids.output, new_state)
     %}
@@ -107,7 +107,7 @@ func sha256_inner{range_check_ptr, sha256_ptr: felt*}(
         assert sha256_ptr[0] = 0;
         assert sha256_ptr[1] = total_bytes * 8;
         let sha256_ptr = sha256_ptr + 2;
-        _sha256_chunk{message=message, state=state, output=output}();
+        _sha256_chunk{sha256_start=message, state=state, output=output}();
         let sha256_ptr = sha256_ptr + SHA256_STATE_SIZE_FELTS;
 
         return ();
@@ -117,7 +117,7 @@ func sha256_inner{range_check_ptr, sha256_ptr: felt*}(
     let is_remainder_block = is_le(q, 0);
     if (is_remainder_block == 1) {
         _sha256_input(data, r, SHA256_INPUT_CHUNK_SIZE_FELTS, 0);
-        _sha256_chunk{message=message, state=state, output=output}();
+        _sha256_chunk{sha256_start=message, state=state, output=output}();
 
         let sha256_ptr = sha256_ptr + SHA256_STATE_SIZE_FELTS;
         memcpy(output + SHA256_STATE_SIZE_FELTS + SHA256_INPUT_CHUNK_SIZE_FELTS, output, SHA256_STATE_SIZE_FELTS);
@@ -126,7 +126,7 @@ func sha256_inner{range_check_ptr, sha256_ptr: felt*}(
         return sha256_inner(data=data, n_bytes=n_bytes - r, total_bytes=total_bytes);
     } else {
         _sha256_input(data, SHA256_INPUT_CHUNK_SIZE_BYTES, SHA256_INPUT_CHUNK_SIZE_FELTS, 0);
-        _sha256_chunk{message=message, state=state, output=output}();
+        _sha256_chunk{sha256_start=message, state=state, output=output}();
 
         let sha256_ptr = sha256_ptr + SHA256_STATE_SIZE_FELTS;
         memcpy(output + SHA256_STATE_SIZE_FELTS + SHA256_INPUT_CHUNK_SIZE_FELTS, output, SHA256_STATE_SIZE_FELTS);
