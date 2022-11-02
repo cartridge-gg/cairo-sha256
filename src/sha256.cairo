@@ -2,7 +2,7 @@ from starkware.cairo.common.alloc import alloc
 from starkware.cairo.common.registers import get_fp_and_pc
 from starkware.cairo.common.cairo_builtins import BitwiseBuiltin
 from starkware.cairo.common.math import assert_nn_le, unsigned_div_rem
-from starkware.cairo.common.math_cmp import is_le
+from starkware.cairo.common.math_cmp import is_le_felt
 from starkware.cairo.common.memcpy import memcpy
 from starkware.cairo.common.memset import memset
 from starkware.cairo.common.pow import pow
@@ -90,17 +90,17 @@ func sha256_inner{range_check_ptr, sha256_ptr: felt*}(
     let state = sha256_ptr + SHA256_INPUT_CHUNK_SIZE_FELTS;
     let output = state + SHA256_STATE_SIZE_FELTS;
 
-    let zero_bytes = is_le(n_bytes, 0);
-    let zero_total_bytes = is_le(total_bytes, 0);
+    let zero_bytes = is_le_felt(n_bytes, 0);
+    let zero_total_bytes = is_le_felt(total_bytes, 0);
 
     // If the previous message block was full we are still missing "1" at the end of the message
     let (_, r_div_by_64) = unsigned_div_rem(total_bytes, 64);
-    let missing_bit_one = is_le(r_div_by_64, 0);
+    let missing_bit_one = is_le_felt(r_div_by_64, 0);
 
     // This works for 0 total bytes too, because zero_chunk will be -1 and, therefore, not 0.
     let zero_chunk = zero_bytes - zero_total_bytes - missing_bit_one;
 
-    let is_last_block = is_le(n_bytes, 55);
+    let is_last_block = is_le_felt(n_bytes, 55);
     if (is_last_block == 1) {
         _sha256_input(data, n_bytes, SHA256_INPUT_CHUNK_SIZE_FELTS - 2, zero_chunk);
         // Append the original message length at the end of the message block as a 64-bit big-endian integer.
@@ -114,7 +114,7 @@ func sha256_inner{range_check_ptr, sha256_ptr: felt*}(
     }
 
     let (q, r) = unsigned_div_rem(n_bytes, SHA256_INPUT_CHUNK_SIZE_BYTES);
-    let is_remainder_block = is_le(q, 0);
+    let is_remainder_block = is_le_felt(q, 0);
     if (is_remainder_block == 1) {
         _sha256_input(data, r, SHA256_INPUT_CHUNK_SIZE_FELTS, 0);
         _sha256_chunk{sha256_start=message, state=state, output=output}();
